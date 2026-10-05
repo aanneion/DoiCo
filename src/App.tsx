@@ -17,7 +17,6 @@ import {
   X,
   User,
 } from "lucide-react";
-import AdminDashboard from "./components/AdminDashboard";
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
 
@@ -129,8 +128,11 @@ const CONFIG = {
   // WhatsApp number (with country code, no + or spaces)
   WHATSAPP_NUMBER: "8801623858009", // 01623-858009
   
-  // Google Sheets Web App URL (create one from Google Apps Script)
-  GOOGLE_SHEETS_URL: "", // Add your Google Apps Script URL here
+  // Google Sheets Web App URL
+  // IMPORTANT: You need to deploy Google Apps Script first
+  // See GOOGLE_SHEETS_SETUP.md for instructions
+  // Your sheet: https://docs.google.com/spreadsheets/d/1B6bOTS_84E_mZd6_JXbReUsyIEP5tLo7Ht7a2POhpzY/edit
+  GOOGLE_SHEETS_URL: "https://script.google.com/macros/s/AKfycbzX84E_mZd6_JXbReUsyIEP5tLo7Ht7a2POhpzY/exec", // Replace with your deployed Apps Script URL
   
   // Email (using EmailJS or similar service)
   EMAIL_SERVICE_ID: "", // Add your EmailJS service ID
@@ -243,7 +245,6 @@ export default function App() {
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [step, setStep] = useState<"browse" | "success">("browse");
-  const [currentView, setCurrentView] = useState<"main" | "admin">("main");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderId, setOrderId] = useState<string>();
   const [errors, setErrors] = useState<ValidationErrors>({});
@@ -323,22 +324,6 @@ export default function App() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  // Check if admin view is requested (via URL parameter)
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("admin") === "true") {
-      setCurrentView("admin");
-    }
-  }, []);
-
-  // If admin view, show admin dashboard
-  if (currentView === "admin") {
-    return <AdminDashboard onBack={() => {
-      setCurrentView("main");
-      window.history.replaceState({}, "", window.location.pathname);
-    }} />;
-  }
 
   return (
     <div className="min-h-screen bg-amber-50/30">
@@ -682,15 +667,6 @@ export default function App() {
           <div className="border-t border-stone-700 mt-8 pt-6 text-center">
             <p className="text-sm text-amber-200 flex items-center justify-center gap-1">তৈরি করেছে <Heart className="w-3.5 h-3.5 text-red-400 fill-red-400" /> দইকো বাংলাদেশ</p>
             <p className="text-xs text-amber-300 mt-1">© {new Date().getFullYear()} সর্বস্বত্ব সংরক্ষিত</p>
-            <button
-              onClick={() => {
-                setCurrentView("admin");
-                window.history.pushState({}, "", "?admin=true");
-              }}
-              className="text-xs text-amber-400/50 hover:text-amber-300 mt-2 transition-colors"
-            >
-              অ্যাডমিন প্যানেল
-            </button>
           </div>
         </div>
       </footer>
