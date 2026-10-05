@@ -30,13 +30,18 @@ interface Product {
   available: boolean;
 }
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// 🖼️ আপনার নিজস্ব ইমেজ যোগ করতে এই পাথগুলো পরিবর্তন করুন
+// ইমেজগুলো public/images/ ফোল্ডারে রাখুন
+// বিস্তারিত গাইড: IMAGE_UPLOAD_GUIDE.md
+// ═══════════════════════════════════════════════════════════════════════════════
 const products: Product[] = [
   {
     id: "mishti-doi-matir-bhar",
     name: "মিষ্টি দই (মাটির ভাঁড়)",
     description: "বগুড়ার ঐতিহ্যবাহী মিষ্টি দই, মাটির ভাঁড়ে পরিবেশিত। ক্যারামেলাইজড স্বাদে ভরপুর।",
     price: 80,
-    image: "https://image.qwenlm.ai/generated-images/a446dec8-5423-4345-83eb-3a03f7e481bb/_result.png",
+    image: "/images/mishti-doi.png", // ← আপনার মিষ্টি দইয়ের ছবি
     available: true,
   },
   {
@@ -44,7 +49,7 @@ const products: Product[] = [
     name: "টক দই",
     description: "খাঁটি ও সতেজ টক দই। প্রতিদিনের স্বাস্থ্যকর খাবার।",
     price: 60,
-    image: "https://image.qwenlm.ai/generated-images/ca76dcef-0640-4d49-a777-d2b01700c01d/_result.png",
+    image: "/images/tok-doi.png", // ← আপনার টক দইয়ের ছবি
     available: true,
   },
   {
@@ -52,7 +57,7 @@ const products: Product[] = [
     name: "নলেন গুরের দই",
     description: "নলেন গুরের বিশেষ স্বাদে তৈরি প্রিমিয়াম দই। শীতের ঐতিহ্য।",
     price: 120,
-    image: "https://image.qwenlm.ai/generated-images/ff9787f5-bccc-4cf4-ac2a-99a5cb44f5c3/_result.png",
+    image: "/images/nolen-gur-doi.png", // ← আপনার নলেন গুরের দইয়ের ছবি
     available: true,
   },
 ];
@@ -362,9 +367,10 @@ export default function App() {
       {step === "browse" && (
         <>
           {/* ─── HERO ─── */}
+          {/* 🖼️ আপনার DoiCo ব্যানার যোগ করতে: public/images/banner.png ফাইলটি রাখুন */}
           <section className="relative min-h-[85vh] sm:min-h-[90vh] flex items-center overflow-hidden">
             <div className="absolute inset-0">
-              <img src="https://image.qwenlm.ai/generated-images/5d17f715-99c3-4076-b691-c6a54a044509/_result.png" alt="দইকো বাংলাদেশ" className="w-full h-full object-cover" loading="eager" />
+              <img src="/images/banner.png" alt="দইকো বাংলাদেশ - বগুড়ার দই" className="w-full h-full object-cover" loading="eager" />
               <div className="absolute inset-0 bg-gradient-to-b from-stone-900/70 via-stone-900/50 to-stone-900/80" />
             </div>
             <div className="relative z-10 max-w-6xl mx-auto px-4 py-20 sm:py-28 text-center">
