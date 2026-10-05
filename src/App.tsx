@@ -27,37 +27,30 @@ interface Product {
   description: string;
   price: number;
   image: string;
+  gallery?: string[]; // ← একাধিক ছবির জন্য (ঐচ্ছিক)
   available: boolean;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // 🖼️ আপনার নিজস্ব ইমেজ যোগ করতে এই পাথগুলো পরিবর্তন করুন
 // ইমেজগুলো public/images/ ফোল্ডারে রাখুন
-// বিস্তারিত গাইড: IMAGE_UPLOAD_GUIDE.md
 // ═══════════════════════════════════════════════════════════════════════════════
 const products: Product[] = [
   {
-    id: "mishti-doi-matir-bhar",
-    name: "মিষ্টি দই (মাটির ভাঁড়)",
-    description: "বগুড়ার ঐতিহ্যবাহী মিষ্টি দই, মাটির ভাঁড়ে পরিবেশিত। ক্যারামেলাইজড স্বাদে ভরপুর।",
-    price: 80,
-    image: "/images/mishti-doi.png", // ← আপনার মিষ্টি দইয়ের ছবি
+    id: "cup-doi",
+    name: "এক কাপ দই",
+    description: "১২৫ গ্রামের এক কাপ ঐতিহ্যবাহী মিষ্টি দই। মাটির ভাঁড়ের স্বাদ।",
+    price: 40,
+    image: "/images/cup.jpg", // ← আপনার কাপ দইয়ের ছবি
     available: true,
   },
   {
-    id: "plain-doi",
-    name: "টক দই",
-    description: "খাঁটি ও সতেজ টক দই। প্রতিদিনের স্বাস্থ্যকর খাবার।",
-    price: 60,
-    image: "/images/tok-doi.png", // ← আপনার টক দইয়ের ছবি
-    available: true,
-  },
-  {
-    id: "nolen-gur-doi",
-    name: "নলেন গুরের দই",
-    description: "নলেন গুরের বিশেষ স্বাদে তৈরি প্রিমিয়াম দই। শীতের ঐতিহ্য।",
-    price: 120,
-    image: "/images/nolen-gur-doi.png", // ← আপনার নলেন গুরের দইয়ের ছবি
+    id: "sora-doi",
+    name: "১ পট/সরা দই",
+    description: "১ কেজি ওজনের মাটির সরায় ঐতিহ্যবাহী দই। পরিবারের জন্য আদর্শ।",
+    price: 500,
+    image: "/images/sora.jpg", // ← আপনার সরা/পটের প্রধান ছবি
+    gallery: ["/images/sora.jpg", "/images/sora2.jpg"], // ← সরা এর দুইটি ছবি
     available: true,
   },
 ];
@@ -367,10 +360,9 @@ export default function App() {
       {step === "browse" && (
         <>
           {/* ─── HERO ─── */}
-          {/* 🖼️ আপনার DoiCo ব্যানার যোগ করতে: public/images/banner.png ফাইলটি রাখুন */}
           <section className="relative min-h-[85vh] sm:min-h-[90vh] flex items-center overflow-hidden">
             <div className="absolute inset-0">
-              <img src="/images/banner.png" alt="দইকো বাংলাদেশ - বগুড়ার দই" className="w-full h-full object-cover" loading="eager" />
+              <img src="/images/banner.jpg" alt="দইকো বাংলাদেশ - বগুড়ার দই" className="w-full h-full object-cover" loading="eager" />
               <div className="absolute inset-0 bg-gradient-to-b from-stone-900/70 via-stone-900/50 to-stone-900/80" />
             </div>
             <div className="relative z-10 max-w-6xl mx-auto px-4 py-20 sm:py-28 text-center">
@@ -425,15 +417,55 @@ export default function App() {
                 <h2 className="text-2xl sm:text-3xl font-bold text-stone-800 mb-2">আমাদের দই</h2>
                 <p className="text-stone-500">আপনার পছন্দের দই বেছে নিন</p>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6 max-w-3xl mx-auto">
                 {products.map((product) => {
                   const qty = quantities[product.id] || 0;
+                  const images = product.gallery || [product.image];
+                  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+                  
                   return (
                     <div key={product.id} className="bg-white rounded-2xl shadow-sm border border-amber-100 overflow-hidden transition-all hover:shadow-md">
                       <div className="relative aspect-square overflow-hidden bg-amber-50">
-                        <img src={product.image} alt={product.name} className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" loading="lazy" />
+                        <img 
+                          src={images[currentImageIndex]} 
+                          alt={product.name} 
+                          className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" 
+                          loading="lazy" 
+                        />
                         {qty > 0 && (
                           <div className="absolute top-3 right-3 bg-amber-700 text-white text-xs font-bold px-2 py-1 rounded-full">{qty}টি</div>
+                        )}
+                        {/* Image Gallery Navigation */}
+                        {images.length > 1 && (
+                          <>
+                            <button
+                              onClick={() => setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))}
+                              className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 hover:bg-white rounded-full flex items-center justify-center shadow-md transition-all"
+                              aria-label="আগের ছবি"
+                            >
+                              <ChevronUp className="w-4 h-4 text-stone-700 rotate-[-90deg]" />
+                            </button>
+                            <button
+                              onClick={() => setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))}
+                              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 hover:bg-white rounded-full flex items-center justify-center shadow-md transition-all"
+                              aria-label="পরের ছবি"
+                            >
+                              <ChevronUp className="w-4 h-4 text-stone-700 rotate-90" />
+                            </button>
+                            {/* Image Indicators */}
+                            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+                              {images.map((_, idx) => (
+                                <button
+                                  key={idx}
+                                  onClick={() => setCurrentImageIndex(idx)}
+                                  className={`w-2 h-2 rounded-full transition-all ${
+                                    idx === currentImageIndex ? "bg-white w-6" : "bg-white/50"
+                                  }`}
+                                  aria-label={`ছবি ${idx + 1}`}
+                                />
+                              ))}
+                            </div>
+                          </>
                         )}
                       </div>
                       <div className="p-4">
