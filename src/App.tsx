@@ -17,6 +17,7 @@ import {
   X,
   User,
 } from "lucide-react";
+import AdminDashboard from "./components/AdminDashboard";
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
 
@@ -108,7 +109,7 @@ function validateOrder(
   return errors;
 }
 
-// ─── ORDER SERVICE (Mock) ────────────────────────────────────────────────────
+// ─── ORDER SERVICE ────────────────────────────────────────────────────────────
 
 interface Order {
   customerName: string;
@@ -119,12 +120,117 @@ interface Order {
   subtotal: number;
   deliveryCharge: number;
   total: number;
+  orderId: string;
+  timestamp: string;
 }
 
-async function submitOrder(order: Order): Promise<{ success: boolean; orderId?: string; message?: string }> {
-  await new Promise((resolve) => setTimeout(resolve, 1500));
-  console.log("Order submitted:", order);
+// Configuration - Replace with your actual credentials
+const CONFIG = {
+  // WhatsApp number (with country code, no + or spaces)
+  WHATSAPP_NUMBER: "8801623858009", // 01623-858009
+  
+  // Google Sheets Web App URL (create one from Google Apps Script)
+  GOOGLE_SHEETS_URL: "", // Add your Google Apps Script URL here
+  
+  // Email (using EmailJS or similar service)
+  EMAIL_SERVICE_ID: "", // Add your EmailJS service ID
+  EMAIL_TEMPLATE_ID: "", // Add your EmailJS template ID
+  EMAIL_PUBLIC_KEY: "", // Add your EmailJS public key
+};
+
+// Save order to localStorage (for admin dashboard)
+function saveOrderToLocalStorage(order: Order): void {
+  const existingOrders = JSON.parse(localStorage.getItem("doico_orders") || "[]");
+  existingOrders.push(order);
+  localStorage.setItem("doico_orders", JSON.stringify(existingOrders));
+}
+
+// Send order via WhatsApp
+function sendWhatsAppNotification(order: Order): void {
+  const message = formatOrderMessage(order);
+  const whatsappUrl = `https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+  
+  // Open WhatsApp in new tab
+  window.open(whatsappUrl, "_blank");
+}
+
+// Send order to Google Sheets
+async function sendToGoogleSheets(order: Order): Promise<void> {
+  if (!CONFIG.GOOGLE_SHEETS_URL) {
+    console.log("Google Sheets URL not configured");
+    return;
+  }
+
+  try {
+    await fetch(CONFIG.GOOGLE_SHEETS_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        orderId: order.orderId,
+        timestamp: order.timestamp,
+        customerName: order.customerName,
+        phone: order.phone,
+        address: order.address,
+        deliveryArea: order.deliveryArea === "dhaka-inside" ? "ঢাকার ভিতরে" : "ঢাকার বাইরে",
+        items: order.items.map(i => `${i.name} x${i.quantity}`).join(", "),
+        subtotal: order.subtotal,
+        deliveryCharge: order.deliveryCharge,
+        total: order.total,
+      }),
+    });
+  } catch (error) {
+    console.error("Failed to send to Google Sheets:", error);
+  }
+}
+
+// Format order message for WhatsApp
+function formatOrderMessage(order: Order): string {
+  const itemsList = order.items
+    .map((item) => `• ${item.name} × ${item.quantity} = ৳${item.price * item.quantity}`)
+    .join("\n");
+
+  return `🍶 *নতুন অর্ডার - দইকো বাংলাদেশ*
+
+📋 *অর্ডার নম্বর:* ${order.orderId}
+🕐 *সময়:* ${new Date(order.timestamp).toLocaleString("bn-BD")}
+
+🛒 *পণ্য:*
+${itemsList}
+
+💰 *পণ্যের মোট:* ৳${order.subtotal}
+🚚 *ডেলিভারি এলাকা:* ${order.deliveryArea === "dhaka-inside" ? "ঢাকার ভিতরে" : "ঢাকার বাইরে"}
+💵 *ডেলিভারি চার্জ:* ৳${order.deliveryCharge}
+💎 *সর্বমোট:* ৳${order.total}
+
+👤 *গ্রাহকের তথ্য:*
+• নাম: ${order.customerName}
+• মোবাইল: ${order.phone}
+• ঠিকানা: ${order.address}`;
+}
+
+// Main order submission function
+async function submitOrder(orderData: Omit<Order, "orderId" | "timestamp">): Promise<{ success: boolean; orderId?: string; message?: string }> {
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  
   const orderId = `DC-${Date.now().toString(36).toUpperCase()}`;
+  const timestamp = new Date().toISOString();
+  
+  const order: Order = {
+    ...orderData,
+    orderId,
+    timestamp,
+  };
+
+  // Save to localStorage
+  saveOrderToLocalStorage(order);
+  
+  // Send to Google Sheets (if configured)
+  await sendToGoogleSheets(order);
+  
+  // Send WhatsApp notification
+  sendWhatsAppNotification(order);
+
   return { success: true, orderId, message: "আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে।" };
 }
 
@@ -137,6 +243,7 @@ export default function App() {
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [step, setStep] = useState<"browse" | "success">("browse");
+  const [currentView, setCurrentView] = useState<"main" | "admin">("main");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderId, setOrderId] = useState<string>();
   const [errors, setErrors] = useState<ValidationErrors>({});
@@ -216,6 +323,22 @@ export default function App() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Check if admin view is requested (via URL parameter)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("admin") === "true") {
+      setCurrentView("admin");
+    }
+  }, []);
+
+  // If admin view, show admin dashboard
+  if (currentView === "admin") {
+    return <AdminDashboard onBack={() => {
+      setCurrentView("main");
+      window.history.replaceState({}, "", window.location.pathname);
+    }} />;
+  }
 
   return (
     <div className="min-h-screen bg-amber-50/30">
@@ -559,6 +682,15 @@ export default function App() {
           <div className="border-t border-stone-700 mt-8 pt-6 text-center">
             <p className="text-sm text-amber-200 flex items-center justify-center gap-1">তৈরি করেছে <Heart className="w-3.5 h-3.5 text-red-400 fill-red-400" /> দইকো বাংলাদেশ</p>
             <p className="text-xs text-amber-300 mt-1">© {new Date().getFullYear()} সর্বস্বত্ব সংরক্ষিত</p>
+            <button
+              onClick={() => {
+                setCurrentView("admin");
+                window.history.pushState({}, "", "?admin=true");
+              }}
+              className="text-xs text-amber-400/50 hover:text-amber-300 mt-2 transition-colors"
+            >
+              অ্যাডমিন প্যানেল
+            </button>
           </div>
         </div>
       </footer>
