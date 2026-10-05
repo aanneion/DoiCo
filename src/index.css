@@ -1,49 +1,5 @@
 @import "tailwindcss";
 
-@theme {
-  --color-cream-50: #fefdf8;
-  --color-cream-100: #fdf9e8;
-  --color-cream-200: #faf0c8;
-  --color-cream-300: #f5e4a0;
-  --color-cream-400: #edd46e;
-  --color-cream-500: #e4c044;
-  
-  --color-clay-50: #fdf8f5;
-  --color-clay-100: #f9ede5;
-  --color-clay-200: #f2d8c8;
-  --color-clay-300: #e8bc9e;
-  --color-clay-400: #dc9a72;
-  --color-clay-500: #d07a4e;
-  --color-clay-600: #b85f38;
-  --color-clay-700: #9a4a2e;
-  --color-clay-800: #7d3d28;
-  --color-clay-900: #5c2d1e;
-  
-  --color-brand-50: #f0fdf4;
-  --color-brand-100: #dcfce7;
-  --color-brand-200: #bbf7d0;
-  --color-brand-300: #86efac;
-  --color-brand-400: #4ade80;
-  --color-brand-500: #22c55e;
-  --color-brand-600: #16a34a;
-  --color-brand-700: #15803d;
-  --color-brand-800: #166534;
-  --color-brand-900: #14532d;
-  
-  --color-warm-50: #fffbeb;
-  --color-warm-100: #fef3c7;
-  --color-warm-200: #fde68a;
-  --color-warm-300: #fcd34d;
-  --color-warm-400: #fbbf24;
-  --color-warm-500: #f59e0b;
-  --color-warm-600: #d97706;
-  --color-warm-700: #b45309;
-  --color-warm-800: #92400e;
-  --color-warm-900: #78350f;
-  
-  --font-bangla: 'Noto Sans Bengali', sans-serif;
-}
-
 * {
   box-sizing: border-box;
 }
@@ -53,10 +9,12 @@ html {
 }
 
 body {
-  font-family: var(--font-bangla);
-  background-color: var(--color-cream-50);
+  font-family: 'Noto Sans Bengali', system-ui, sans-serif;
+  background-color: #fefdf8;
   color: #2d1810;
   line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Custom scrollbar */
@@ -65,22 +23,17 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-cream-100);
+  background: #fdf9e8;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-clay-300);
+  background: #e8bc9e;
   border-radius: 3px;
-}
-
-/* Smooth transitions */
-.transition-all-smooth {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Focus styles for accessibility */
 *:focus-visible {
-  outline: 2px solid var(--color-clay-500);
+  outline: 2px solid #d07a4e;
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -119,6 +72,10 @@ button {
   }
 }
 
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 .animate-fade-in-up {
   animation: fadeInUp 0.6s ease-out forwards;
 }
@@ -131,11 +88,15 @@ button {
   animation: slideUp 0.4s ease-out forwards;
 }
 
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
 /* Stagger animations */
-.stagger-1 { animation-delay: 0.1s; }
-.stagger-2 { animation-delay: 0.2s; }
-.stagger-3 { animation-delay: 0.3s; }
-.stagger-4 { animation-delay: 0.4s; }
+.stagger-1 { animation-delay: 0.1s; opacity: 0; }
+.stagger-2 { animation-delay: 0.2s; opacity: 0; }
+.stagger-3 { animation-delay: 0.3s; opacity: 0; }
+.stagger-4 { animation-delay: 0.4s; opacity: 0; }
 
 /* Safe area for mobile devices */
 .safe-bottom {
@@ -150,19 +111,13 @@ button {
   overflow: hidden;
 }
 
-/* Bottom padding when sticky CTA is visible */
-@media (max-width: 639px) {
-  body.has-sticky-cta {
-    padding-bottom: 5rem;
-  }
-}
-
-/* Input styling for mobile */
+/* Input styling for mobile - prevents zoom */
 input, textarea, select {
-  font-size: 16px; /* Prevents zoom on iOS */
+  font-size: 16px;
+  font-family: 'Noto Sans Bengali', system-ui, sans-serif;
 }
 
-/* Better touch targets */
+/* Better touch targets on mobile */
 @media (pointer: coarse) {
   button, a, [role="button"] {
     min-height: 44px;

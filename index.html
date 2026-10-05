@@ -2,7 +2,7 @@
 <html lang="bn">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>দইকো বাংলাদেশ | বগুড়ার দইয়ের নতুন ঠিকানা</title>
     <meta name="description" content="ঐতিহ্যবাহী স্বাদ, মানসম্মত প্রস্তুতি এবং প্রতিদিনের সতেজতা। বগুড়ার গর্ব, আপনার টেবিলে।" />
     <meta name="keywords" content="দই, বগুড়ার দই, মিষ্টি দই, দইকো, DoiCo Bangladesh, বগুড়া" />
@@ -21,7 +21,7 @@
     <meta name="twitter:image" content="https://image.qwenlm.ai/generated-images/5d17f715-99c3-4076-b691-c6a54a044509/_result.png" />
     
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍶</text></svg>" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍶</text></svg>" />
     
     <!-- Google Fonts - Noto Sans Bengali -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -36,9 +36,14 @@
         min-height: 100vh;
       }
       body {
-        font-family: 'Noto Sans Bengali', sans-serif;
+        font-family: 'Noto Sans Bengali', system-ui, -apple-system, sans-serif;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+        background-color: #fefdf8;
+      }
+      /* Prevent FOUC */
+      #root {
+        min-height: 100vh;
       }
     </style>
   </head>
