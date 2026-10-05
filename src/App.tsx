@@ -17,6 +17,7 @@ import {
   X,
   User,
 } from "lucide-react";
+import emailjs from "@emailjs/browser";
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
 
@@ -126,16 +127,15 @@ interface Order {
 
 // Configuration - Replace with your actual credentials
 const CONFIG = {
-  // WhatsApp number (with country code, no + or spaces)
-  WHATSAPP_NUMBER: "8801623858009", // 01623-858009
-  
   // Google Sheets Web App URL
   GOOGLE_SHEETS_URL: "https://script.google.com/macros/s/AKfycbyk89ANqAESSmIwNK8oz7a1U9zkHuOG8LNAK4CXt1vrcdj0eMfPSSPGMkpTW0OW4XOSuw/exec",
   
-  // Email (using EmailJS or similar service)
-  EMAIL_SERVICE_ID: "", // Add your EmailJS service ID
-  EMAIL_TEMPLATE_ID: "", // Add your EmailJS template ID
-  EMAIL_PUBLIC_KEY: "", // Add your EmailJS public key
+  // EmailJS Configuration
+  // Get these from https://www.emailjs.com/
+  EMAIL_SERVICE_ID: "service_doico", // Replace with your EmailJS service ID
+  EMAIL_TEMPLATE_ID: "template_doico", // Replace with your EmailJS template ID
+  EMAIL_PUBLIC_KEY: "YOUR_PUBLIC_KEY", // Replace with your EmailJS public key
+  EMAIL_TO: "doicobangladesh@gmail.com", // Where to send order notifications
 };
 
 // Save order to localStorage (for admin dashboard)
@@ -145,13 +145,46 @@ function saveOrderToLocalStorage(order: Order): void {
   localStorage.setItem("doico_orders", JSON.stringify(existingOrders));
 }
 
-// Send order via WhatsApp
-function sendWhatsAppNotification(order: Order): void {
-  const message = formatOrderMessage(order);
-  const whatsappUrl = `https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-  
-  // Open WhatsApp in new tab
-  window.open(whatsappUrl, "_blank");
+// Send order notification via EmailJS
+async function sendEmailNotification(order: Order): Promise<void> {
+  if (!CONFIG.EMAIL_SERVICE_ID || !CONFIG.EMAIL_TEMPLATE_ID || !CONFIG.EMAIL_PUBLIC_KEY) {
+    console.log("EmailJS not configured");
+    return;
+  }
+
+  try {
+    const deliveryAreaText = 
+      order.deliveryArea === "dhaka-inside" ? "ঢাকার ভিতরে" :
+      order.deliveryArea === "dhaka-outside" ? "ঢাকার বাইরে" :
+      "বাকৃবি এলাকা";
+
+    const itemsList = order.items
+      .map((item) => `${item.name} × ${item.quantity} = ৳${item.price * item.quantity}`)
+      .join("\n");
+
+    const templateParams = {
+      to_email: CONFIG.EMAIL_TO,
+      order_id: order.orderId,
+      order_time: new Date(order.timestamp).toLocaleString("bn-BD"),
+      customer_name: order.customerName,
+      customer_phone: order.phone,
+      customer_address: order.address,
+      delivery_area: deliveryAreaText,
+      items: itemsList,
+      subtotal: `৳${order.subtotal}`,
+      delivery_charge: order.deliveryCharge === 0 ? "ফ্রি" : `৳${order.deliveryCharge}`,
+      total: `৳${order.total}`,
+    };
+
+    await emailjs.send(
+      CONFIG.EMAIL_SERVICE_ID,
+      CONFIG.EMAIL_TEMPLATE_ID,
+      templateParams,
+      CONFIG.EMAIL_PUBLIC_KEY
+    );
+  } catch (error) {
+    console.error("Failed to send email notification:", error);
+  }
 }
 
 // Send order to Google Sheets
@@ -189,37 +222,7 @@ async function sendToGoogleSheets(order: Order): Promise<void> {
   }
 }
 
-// Format order message for WhatsApp
-function formatOrderMessage(order: Order): string {
-  const itemsList = order.items
-    .map((item) => `• ${item.name} × ${item.quantity} = ৳${item.price * item.quantity}`)
-    .join("\n");
 
-  const deliveryAreaText = 
-    order.deliveryArea === "dhaka-inside" ? "ঢাকার ভিতরে" :
-    order.deliveryArea === "dhaka-outside" ? "ঢাকার বাইরে" :
-    "বাংলাদেশ কৃষি বিশ্ববিদ্যালয় এলাকা";
-
-  const deliveryChargeText = order.deliveryCharge === 0 ? "ফ্রি" : `৳${order.deliveryCharge}`;
-
-  return `🍶 *নতুন অর্ডার - দইকো বাংলাদেশ*
-
-📋 *অর্ডার নম্বর:* ${order.orderId}
-🕐 *সময়:* ${new Date(order.timestamp).toLocaleString("bn-BD")}
-
-🛒 *পণ্য:*
-${itemsList}
-
-💰 *পণ্যের মোট:* ৳${order.subtotal}
-🚚 *ডেলিভারি এলাকা:* ${deliveryAreaText}
-💵 *ডেলিভারি চার্জ:* ${deliveryChargeText}
-💎 *সর্বমোট:* ৳${order.total}
-
-👤 *গ্রাহকের তথ্য:*
-• নাম: ${order.customerName}
-• মোবাইল: ${order.phone}
-• ঠিকানা: ${order.address}`;
-}
 
 // Main order submission function
 async function submitOrder(orderData: Omit<Order, "orderId" | "timestamp">): Promise<{ success: boolean; orderId?: string; message?: string }> {
@@ -240,8 +243,8 @@ async function submitOrder(orderData: Omit<Order, "orderId" | "timestamp">): Pro
   // Send to Google Sheets (if configured)
   await sendToGoogleSheets(order);
   
-  // Send WhatsApp notification
-  sendWhatsAppNotification(order);
+  // Send email notification
+  await sendEmailNotification(order);
 
   return { success: true, orderId, message: "আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে।" };
 }
