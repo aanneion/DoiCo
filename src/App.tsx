@@ -68,9 +68,10 @@ interface OrderItem {
 const DELIVERY_CHARGES = {
   "dhaka-inside": 60,
   "dhaka-outside": 120,
+  "bau-area": 0,
 } as const;
 
-type DeliveryArea = "dhaka-inside" | "dhaka-outside";
+type DeliveryArea = "dhaka-inside" | "dhaka-outside" | "bau-area";
 
 function formatPrice(amount: number): string {
   return `৳${amount}`;
@@ -129,10 +130,7 @@ const CONFIG = {
   WHATSAPP_NUMBER: "8801623858009", // 01623-858009
   
   // Google Sheets Web App URL
-  // IMPORTANT: You need to deploy Google Apps Script first
-  // See GOOGLE_SHEETS_SETUP.md for instructions
-  // Your sheet: https://docs.google.com/spreadsheets/d/1B6bOTS_84E_mZd6_JXbReUsyIEP5tLo7Ht7a2POhpzY/edit
-  GOOGLE_SHEETS_URL: "https://script.google.com/macros/s/AKfycbzX84E_mZd6_JXbReUsyIEP5tLo7Ht7a2POhpzY/exec", // Replace with your deployed Apps Script URL
+  GOOGLE_SHEETS_URL: "https://script.google.com/macros/s/AKfycbyk89ANqAESSmIwNK8oz7a1U9zkHuOG8LNAK4CXt1vrcdj0eMfPSSPGMkpTW0OW4XOSuw/exec",
   
   // Email (using EmailJS or similar service)
   EMAIL_SERVICE_ID: "", // Add your EmailJS service ID
@@ -164,6 +162,11 @@ async function sendToGoogleSheets(order: Order): Promise<void> {
   }
 
   try {
+    const deliveryAreaText = 
+      order.deliveryArea === "dhaka-inside" ? "ঢাকার ভিতরে" :
+      order.deliveryArea === "dhaka-outside" ? "ঢাকার বাইরে" :
+      "বাকৃবি এলাকা";
+
     await fetch(CONFIG.GOOGLE_SHEETS_URL, {
       method: "POST",
       mode: "no-cors",
@@ -174,7 +177,7 @@ async function sendToGoogleSheets(order: Order): Promise<void> {
         customerName: order.customerName,
         phone: order.phone,
         address: order.address,
-        deliveryArea: order.deliveryArea === "dhaka-inside" ? "ঢাকার ভিতরে" : "ঢাকার বাইরে",
+        deliveryArea: deliveryAreaText,
         items: order.items.map(i => `${i.name} x${i.quantity}`).join(", "),
         subtotal: order.subtotal,
         deliveryCharge: order.deliveryCharge,
@@ -192,6 +195,13 @@ function formatOrderMessage(order: Order): string {
     .map((item) => `• ${item.name} × ${item.quantity} = ৳${item.price * item.quantity}`)
     .join("\n");
 
+  const deliveryAreaText = 
+    order.deliveryArea === "dhaka-inside" ? "ঢাকার ভিতরে" :
+    order.deliveryArea === "dhaka-outside" ? "ঢাকার বাইরে" :
+    "বাংলাদেশ কৃষি বিশ্ববিদ্যালয় এলাকা";
+
+  const deliveryChargeText = order.deliveryCharge === 0 ? "ফ্রি" : `৳${order.deliveryCharge}`;
+
   return `🍶 *নতুন অর্ডার - দইকো বাংলাদেশ*
 
 📋 *অর্ডার নম্বর:* ${order.orderId}
@@ -201,8 +211,8 @@ function formatOrderMessage(order: Order): string {
 ${itemsList}
 
 💰 *পণ্যের মোট:* ৳${order.subtotal}
-🚚 *ডেলিভারি এলাকা:* ${order.deliveryArea === "dhaka-inside" ? "ঢাকার ভিতরে" : "ঢাকার বাইরে"}
-💵 *ডেলিভারি চার্জ:* ৳${order.deliveryCharge}
+🚚 *ডেলিভারি এলাকা:* ${deliveryAreaText}
+💵 *ডেলিভারি চার্জ:* ${deliveryChargeText}
 💎 *সর্বমোট:* ৳${order.total}
 
 👤 *গ্রাহকের তথ্য:*
@@ -449,7 +459,7 @@ export default function App() {
 
           {/* ─── DELIVERY INFO BANNER ─── */}
           <div className="bg-amber-50 border-y border-amber-100 py-6 px-4">
-            <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+            <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-center">
               <div className="flex flex-col items-center">
                 <span className="text-2xl mb-1">🏠</span>
                 <p className="text-sm font-semibold text-stone-800">ঢাকার ভিতরে</p>
@@ -459,6 +469,12 @@ export default function App() {
                 <span className="text-2xl mb-1">🚚</span>
                 <p className="text-sm font-semibold text-stone-800">ঢাকার বাইরে</p>
                 <p className="text-stone-600">ডেলিভারি চার্জ: ৳১২০</p>
+              </div>
+              <div className="flex flex-col items-center">
+                <span className="text-2xl mb-1">⚡</span>
+                <p className="text-sm font-semibold text-stone-800">বাকৃবি এলাকা</p>
+                <p className="text-green-600 font-medium">ফ্রি ডেলিভারি</p>
+                <p className="text-xs text-stone-500">১৫ মিনিটে ডেলিভারি</p>
               </div>
               <div className="flex flex-col items-center">
                 <span className="text-2xl mb-1">📞</span>
@@ -513,16 +529,18 @@ export default function App() {
                   </div>
                   <div className="p-4 space-y-3">
                     {([
-                      { value: "dhaka-inside" as const, label: "ঢাকার ভিতরে", desc: "ঢাকা মহানগরী এলাকা", charge: 60 },
-                      { value: "dhaka-outside" as const, label: "ঢাকার বাইরে", desc: "সারাদেশ (ঢাকা ব্যতীত)", charge: 120 },
+                      { value: "dhaka-inside" as const, label: "ঢাকার ভিতরে", desc: "ঢাকা মহানগরী এলাকা", charge: 60, time: "" },
+                      { value: "dhaka-outside" as const, label: "ঢাকার বাইরে", desc: "সারাদেশ (ঢাকা ব্যতীত)", charge: 120, time: "" },
+                      { value: "bau-area" as const, label: "বাংলাদেশ কৃষি বিশ্ববিদ্যালয় এলাকা", desc: "বাকৃবি ক্যাম্পাস ও আশেপাশে", charge: 0, time: "১৫ মিনিটের মধ্যে ডেলিভারি" },
                     ]).map((option) => (
                       <label key={option.value} className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${deliveryArea === option.value ? "border-amber-500 bg-amber-50" : "border-amber-100 hover:border-amber-200"}`}>
                         <input type="radio" name="deliveryArea" checked={deliveryArea === option.value} onChange={() => setDeliveryArea(option.value)} className="w-5 h-5 accent-amber-600" />
                         <div className="flex-1">
                           <p className="font-semibold text-stone-800">{option.label}</p>
                           <p className="text-sm text-stone-500">{option.desc}</p>
+                          {option.time && <p className="text-xs text-green-600 font-medium mt-1">⚡ {option.time}</p>}
                         </div>
-                        <span className="font-bold text-stone-700">{formatPrice(option.charge)}</span>
+                        <span className="font-bold text-stone-700">{option.charge === 0 ? "ফ্রি" : formatPrice(option.charge)}</span>
                       </label>
                     ))}
                   </div>
@@ -659,8 +677,9 @@ export default function App() {
             <div>
               <h4 className="font-bold text-white mb-4">তথ্য</h4>
               <ul className="space-y-2 text-sm text-amber-100">
-                <li className="flex items-center gap-2"><MapPin className="w-4 h-4 text-amber-300" />ঢাকার ভিতরে ডেলিভারি: ৳৬০</li>
-                <li className="flex items-center gap-2"><MapPin className="w-4 h-4 text-amber-300" />ঢাকার বাইরে ডেলিভারি: ৳১২০</li>
+                <li className="flex items-center gap-2"><MapPin className="w-4 h-4 text-amber-300" />ঢাকার ভিতরে: ৳৬০</li>
+                <li className="flex items-center gap-2"><MapPin className="w-4 h-4 text-amber-300" />ঢাকার বাইরে: ৳১২০</li>
+                <li className="flex items-center gap-2"><MapPin className="w-4 h-4 text-amber-300" />বাকৃবি এলাকা: ফ্রি</li>
               </ul>
             </div>
           </div>
