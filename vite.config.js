@@ -4,6 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  base: "/DoiCo/", // GitHub Pages এর জন্য base path
   server: {
     host: "0.0.0.0",
     port: 3000,
