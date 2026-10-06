@@ -49,7 +49,7 @@ const products: Product[] = [
     name: "এক কাপ দই",
     description: "১২৫ গ্রামের এক কাপ ঐতিহ্যবাহী মিষ্টি দই। মাটির ভাঁড়ের স্বাদ।",
     price: 40,
-    image: "https://raw.githubusercontent.com/aanneion/DoiCo/main/public/images/cup.jpg",
+    image: "https://raw.githubusercontent.com/aanneion/DoiCo/doico-bangla-landing-page-94852/public/images/cup.jpg",
     available: true,
   },
   {
@@ -57,11 +57,7 @@ const products: Product[] = [
     name: "১ পট/সরা দই",
     description: "১ কেজি ওজনের মাটির সরায় ঐতিহ্যবাহী দই। পরিবারের জন্য আদর্শ।",
     price: 500,
-    image: "https://raw.githubusercontent.com/aanneion/DoiCo/main/public/images/sora.jpg",
-    gallery: [
-      "https://raw.githubusercontent.com/aanneion/DoiCo/main/public/images/sora.jpg",
-      "https://raw.githubusercontent.com/aanneion/DoiCo/main/public/images/sora%202.jpg"
-    ],
+    image: "https://raw.githubusercontent.com/aanneion/DoiCo/doico-bangla-landing-page-94852/public/images/sora%202.jpg",
     available: true,
   },
 ];

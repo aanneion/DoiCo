@@ -1,8 +1,8 @@
 # Dependencies
 node_modules/
 
-# Build output (dist ফোল্ডার GitHub Pages এর জন্য commit করতে হবে)
-# dist/
+# Build output
+dist/
 
 # Environment variables
 .env
@@ -26,4 +26,3 @@ yarn-debug.log*
 yarn-error.log*
 .next/
 build/
-dist/

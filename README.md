@@ -2,30 +2,31 @@
 
 **বগুড়ার দইয়ের নতুন ঠিকানা**
 
-🌐 **লাইভ ওয়েবসাইট:** [https://aanneion.github.io/DoiCo/](https://aanneion.github.io/DoiCo/)
+একটি প্রিমিয়াম, মোবাইল-ফার্স্ট বাংলা ল্যান্ডিং পেজ দইকো বাংলাদেশের জন্য।
 
----
+## 🚀 ফিচারসমূহ
 
-## 📦 অর্ডার নোটিফিকেশন সিস্টেম
+- ✅ মোবাইল-ফার্স্ট ডিজাইন
+- ✅ বাংলা ভাষায় সম্পূর্ণ UI
+- ✅ প্রোডাক্ট গ্যালারি
+- ✅ অর্ডার সিস্টেম
+- ✅ Google Sheets ইন্টিগ্রেশন
+- ✅ Email নোটিফিকেশন (EmailJS)
+- ✅ WhatsApp যোগাযোগ
+- ✅ ৩টি ডেলিভারি জোন (ঢাকার ভিতরে, বাইরে, বাকৃবি)
 
-### ১. Google Sheets ✅
-সব অর্ডার স্বয়ংক্রিয়ভাবে Google Sheets-এ সেভ হয়।
+## 🛠️ টেকনোলজি
 
-**আপনার শিট:** https://docs.google.com/spreadsheets/d/1B6bOTS_84E_mZd6_JXbReUsyIEP5tLo7Ht7a2POhpzY/edit
+- **React 18** + **TypeScript**
+- **Vite** - Build tool
+- **Tailwind CSS v4** - Styling
+- **Lucide React** - Icons
+- **EmailJS** - Email notifications
 
-### ২. Email Notification ✅
-প্রতিটি অর্ডারের পর স্বয়ংক্রিয়ভাবে ইমেইল নোটিফিকেশন যায় (EmailJS দিয়ে)।
-
-**সেটআপ গাইড:** [EMAILJS_SETUP.md](./EMAILJS_SETUP.md)
-
----
-
-## 🚀 ডেভেলপমেন্ট
-
-### লোকাল ডেভেলপমেন্ট
+## 📦 ডেভেলপমেন্ট
 
 ```bash
-# ডিপেন্ডেন্সি ইনস্টল করুন
+# ডিপেন্ডেন্সি ইনস্টল
 npm install
 
 # ডেভেলপমেন্ট সার্ভার চালান
@@ -35,109 +36,114 @@ npm run dev
 npm run build
 ```
 
-### GitHub Pages-এ ডিপ্লয়
+## 🌐 Cloudflare Pages এ ডিপ্লয়
 
-এই প্রজেক্ট **GitHub Pages**-এ হোস্ট করা হয়েছে। স্বয়ংক্রিয় ডিপ্লয়মেন্ট সেটআপ করা আছে।
+### ধাপ ১: Cloudflare Dashboard এ যান
+1. [dash.cloudflare.com](https://dash.cloudflare.com) এ লগইন করুন
+2. বাম পাশের মেনু থেকে **Workers & Pages** ক্লিক করুন
+3. **Create application** ক্লিক করুন
+4. **Pages** ট্যাবে ক্লিক করুন
+5. **Connect to Git** ক্লিক করুন
 
-#### প্রথমবার সেটআপ:
+### ধাপ ২: GitHub Repository কানেক্ট করুন
+1. আপনার GitHub account সিলেক্ট করুন
+2. **DoiCo** repository সিলেক্ট করুন
+3. **Begin setup** ক্লিক করুন
 
-1. **GitHub Repository Settings-এ যান**
-   - Repository-এ যান
-   - **Settings** ট্যাবে ক্লিক করুন
-   - বাম পাশে **Pages** সেকশনে যান
+### ধাপ ৩: Build Settings কনফিগার করুন
+নিচের সেটিংস দিন:
 
-2. **Source সিলেক্ট করুন**
-   - **Source** এ **GitHub Actions** সিলেক্ট করুন
+| Setting | Value |
+|---------|-------|
+| **Framework preset** | `Vite` (অথবা None) |
+| **Build command** | `npm run build` |
+| **Build output directory** | `dist` |
+| **Root directory** | `/` (খালি রাখুন) |
 
-3. **কোড Push করুন**
-   ```bash
-   git add .
-   git commit -m "Setup GitHub Pages deployment"
-   git push origin main
-   ```
+### ধাপ ৪: Deploy করুন
+1. **Save and Deploy** ক্লিক করুন
+2. ২-৩ মিনিট অপেক্ষা করুন
+3. আপনার সাইট লাইভ হবে!
 
-4. **Actions ট্যাবে যান**
-   - **Actions** ট্যাবে ক্লিক করুন
-   - "Deploy to GitHub Pages" workflow চলতে দেখবেন
-   - সফল হলে আপনার সাইট লাইভ হবে
-
-#### সাইটের URL:
+### 🎯 আপনার সাইটের URL:
 ```
-https://aanneion.github.io/DoiCo/
+https://doico.pages.dev
 ```
 
----
+## 🔄 স্বয়ংক্রিয় ডিপ্লয়মেন্ট
+
+একবার সেটআপ হয়ে গেলে, প্রতিবার `main` branch এ push করলে Cloudflare Pages স্বয়ংক্রিয়ভাবে নতুন ভার্সন ডিপ্লয় করবে।
+
+## 📧 Email Notification সেটআপ
+
+Email নোটিফিকেশন পেতে [EmailJS](https://www.emailjs.com/) সেটআপ করুন:
+
+1. EmailJS এ অ্যাকাউন্ট তৈরি করুন
+2. Email Service সেটআপ করুন (Gmail)
+3. Email Template তৈরি করুন
+4. `src/App.tsx` এ `CONFIG` অবজেক্টে credentials দিন:
+
+```typescript
+const CONFIG = {
+  GOOGLE_SHEETS_URL: "YOUR_GOOGLE_SHEETS_URL",
+  EMAIL_SERVICE_ID: "your_service_id",
+  EMAIL_TEMPLATE_ID: "your_template_id",
+  EMAIL_PUBLIC_KEY: "your_public_key",
+  EMAIL_TO: "doicobangladesh@gmail.com",
+};
+```
+
+## 📊 Google Sheets সেটআপ
+
+অর্ডার স্বয়ংক্রিয়ভাবে Google Sheets এ সেভ করতে:
+
+1. Google Sheet তৈরি করুন
+2. Extensions > Apps Script এ যান
+3. এই কোড পেস্ট করুন:
+
+```javascript
+function doPost(e) {
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    var data = JSON.parse(e.postData.contents);
+    sheet.appendRow([
+      data.orderId, new Date(data.timestamp), data.customerName,
+      data.phone, data.address, data.deliveryArea,
+      data.items, data.subtotal, data.deliveryCharge, data.total
+    ]);
+    return ContentService.createTextOutput(JSON.stringify({status: "success"}))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch(error) {
+    return ContentService.createTextOutput(JSON.stringify({status: "error"}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+```
+
+4. Deploy > Web app সিলেক্ট করুন
+5. URL কপি করে `CONFIG.GOOGLE_SHEETS_URL` এ পেস্ট করুন
 
 ## 📁 প্রজেক্ট স্ট্রাকচার
 
 ```
 DoiCo/
-├── .github/
-│   └── workflows/
-│       └── deploy.yml          ← GitHub Actions workflow
 ├── public/
-│   └── images/                 ← ইমেজ ফাইল (GitHub থেকে লোড হয়)
+│   └── images/          # প্রোডাক্ট ইমেজ
 ├── src/
-│   ├── App.tsx                 ← মূল অ্যাপ
-│   ├── index.css               ← স্টাইল
-│   └── main.tsx                ← এন্ট্রি পয়েন্ট
-├── index.html                  ← HTML টেমপ্লেট
-├── package.json                ← ডিপেন্ডেন্সি
-├── vite.config.js              ← Vite কনফিগ (base: '/DoiCo/')
-└── README.md                   ← এই ফাইল
+│   ├── App.tsx          # মূল অ্যাপ
+│   ├── index.css        # স্টাইল
+│   └── main.tsx         # এন্ট্রি পয়েন্ট
+├── index.html           # HTML টেমপ্লেট
+├── package.json         # ডিপেন্ডেন্সি
+├── vite.config.js       # Vite কনফিগ
+└── README.md            # এই ফাইল
 ```
-
----
-
-## 🛠️ কনফিগারেশন
-
-### Google Sheets URL
-`src/App.tsx` এ `CONFIG.GOOGLE_SHEETS_URL` আপডেট করুন:
-
-```typescript
-const CONFIG = {
-  GOOGLE_SHEETS_URL: "YOUR_GOOGLE_SHEETS_URL",
-  // ...
-};
-```
-
-### EmailJS সেটআপ
-`src/App.tsx` এ EmailJS credentials দিন:
-
-```typescript
-const CONFIG = {
-  EMAIL_SERVICE_ID: "YOUR_SERVICE_ID",
-  EMAIL_TEMPLATE_ID: "YOUR_TEMPLATE_ID",
-  EMAIL_PUBLIC_KEY: "YOUR_PUBLIC_KEY",
-  EMAIL_TO: "doicobangladesh@gmail.com",
-};
-```
-
-**বিস্তারিত গাইড:** [EMAILJS_SETUP.md](./EMAILJS_SETUP.md)
-
----
-
-## 🎨 ফিচারসমূহ
-
-- ✅ মোবাইল-ফার্স্ট ডিজাইন
-- ✅ বাংলা ভাষায় সম্পূর্ণ UI
-- ✅ প্রোডাক্ট গ্যালারি (একাধিক ছবি)
-- ✅ অর্ডার সিস্টেম
-- ✅ Google Sheets ইন্টিগ্রেশন
-- ✅ Email নোটিফিকেশন
-- ✅ WhatsApp যোগাযোগ
-- ✅ ৩টি ডেলিভারি জোন (ঢাকার ভিতরে, বাইরে, বাকৃবি)
-- ✅ GitHub Pages ডিপ্লয়মেন্ট
-
----
 
 ## 📞 যোগাযোগ
 
 - **WhatsApp:** 01623-858009
 - **Email:** doicobangladesh@gmail.com
 - **Facebook:** [DoiCo Bangladesh](https://www.facebook.com/profile.php?id=61592847131521)
-
----
 
 ## 📝 লাইসেন্স
 
