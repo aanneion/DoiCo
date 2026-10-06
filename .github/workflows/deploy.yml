@@ -50,10 +50,10 @@ jobs:
         uses: actions/configure-pages@v4
 
       - name: Install dependencies
-        run: ${{ steps.detection.outputs.manager }} ${{ steps.detection.outputs.command }}
+        run: npm install
 
       - name: Build with Vite
-        run: ${{ steps.detection.outputs.runner }} build
+        run: npm run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
