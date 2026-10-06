@@ -60,7 +60,7 @@ const products: Product[] = [
     image: "https://raw.githubusercontent.com/aanneion/DoiCo/main/public/images/sora.jpg",
     gallery: [
       "https://raw.githubusercontent.com/aanneion/DoiCo/main/public/images/sora.jpg",
-      "https://raw.githubusercontent.com/aanneion/DoiCo/main/public/images/sora2.jpg"
+      "https://raw.githubusercontent.com/aanneion/DoiCo/main/public/images/sora%202.jpg"
     ],
     available: true,
   },
