@@ -41,8 +41,7 @@ interface Product {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// 🖼️ আপনার নিজস্ব ইমেজ যোগ করতে এই পাথগুলো পরিবর্তন করুন
-// ইমেজগুলো public/images/ ফোল্ডারে রাখুন
+// 🖼️ ইমেজ URL (GitHub থেকে লোড হচ্ছে)
 // ═══════════════════════════════════════════════════════════════════════════════
 const products: Product[] = [
   {
@@ -50,7 +49,7 @@ const products: Product[] = [
     name: "এক কাপ দই",
     description: "১২৫ গ্রামের এক কাপ ঐতিহ্যবাহী মিষ্টি দই। মাটির ভাঁড়ের স্বাদ।",
     price: 40,
-    image: "/images/cup.jpg", // ← আপনার কাপ দইয়ের ছবি
+    image: "https://raw.githubusercontent.com/aanneion/DoiCo/main/public/images/cup.jpg",
     available: true,
   },
   {
@@ -58,8 +57,11 @@ const products: Product[] = [
     name: "১ পট/সরা দই",
     description: "১ কেজি ওজনের মাটির সরায় ঐতিহ্যবাহী দই। পরিবারের জন্য আদর্শ।",
     price: 500,
-    image: "/images/sora.jpg", // ← আপনার সরা/পটের প্রধান ছবি
-    gallery: ["/images/sora.jpg", "/images/sora2.jpg"], // ← সরা এর দুইটি ছবি
+    image: "https://raw.githubusercontent.com/aanneion/DoiCo/main/public/images/sora.jpg",
+    gallery: [
+      "https://raw.githubusercontent.com/aanneion/DoiCo/main/public/images/sora.jpg",
+      "https://raw.githubusercontent.com/aanneion/DoiCo/main/public/images/sora2.jpg"
+    ],
     available: true,
   },
 ];
@@ -371,7 +373,7 @@ export default function App() {
           {/* ─── HERO ─── */}
           <section className="relative min-h-[85vh] sm:min-h-[90vh] flex items-center overflow-hidden">
             <div className="absolute inset-0">
-              <img src="/images/banner.jpg" alt="দইকো বাংলাদেশ - বগুড়ার দই" className="w-full h-full object-cover" loading="eager" />
+              <img src="https://raw.githubusercontent.com/aanneion/DoiCo/main/public/images/banner.jpg" alt="দইকো বাংলাদেশ - বগুড়ার দই" className="w-full h-full object-cover" loading="eager" />
               <div className="absolute inset-0 bg-gradient-to-b from-stone-900/70 via-stone-900/50 to-stone-900/80" />
             </div>
             <div className="relative z-10 max-w-6xl mx-auto px-4 py-20 sm:py-28 text-center">
